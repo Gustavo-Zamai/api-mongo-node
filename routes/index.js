@@ -42,9 +42,34 @@ router.post('/customers/', function (req, res, next) {
   });
 });
 
+/* PUT ONE customer. */
+router.put('/customers/:id', function (req, res, next) {
+  var db = require('../db');
+  var Customer = db.Mongoose.model('customers', db.CustomerSchema, 'customers');
+  Customer.findOneAndUpdate({ _id: req.params.id }, req.body, { upsert: true }, function (err, doc) {
+      if (err) {
+          res.status(500).json({ error: err.message });
+          res.end();
+          return;
+      }
+      res.json(req.body);
+      res.end();
+  });
+});
 
-
-
-
+/* DELETE ONE customer. */
+router.delete('/customers/:id', function (req, res, next) {
+  var db = require('../db');
+  var Customer = db.Mongoose.model('customers', db.CustomerSchema, 'customers');
+  Customer.find({ _id: req.params.id }).remove(function (err) {
+      if (err) {
+          res.status(500).json({ error: err.message });
+          res.end();
+          return;
+      }
+      res.json({success: true});
+      res.end();
+  });
+});
 
 module.exports = router;
